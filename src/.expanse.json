@@ -29,47 +29,6 @@
       "order": 0.4038940050501252,
       "hidden": false
     },
-    "729478ae-d067-4e0c-a753-66c2e9efb625": {
-      "components": {
-        "8fe14f4e-4311-4b03-807d-a34c9c11368d": {
-          "id": "8fe14f4e-4311-4b03-807d-a34c9c11368d",
-          "name": "example-component",
-          "parameters": {}
-        }
-      },
-      "geometry": {
-        "depth": 1,
-        "height": 1,
-        "type": "box",
-        "width": 1
-      },
-      "id": "729478ae-d067-4e0c-a753-66c2e9efb625",
-      "material": {
-        "color": "#7611b6",
-        "type": "basic",
-        "textureFiltering": "sharp"
-      },
-      "name": "Box",
-      "position": [
-        -1.372232991519807,
-        0.5,
-        0
-      ],
-      "rotation": [
-        0,
-        0,
-        0,
-        1
-      ],
-      "scale": [
-        1,
-        1,
-        1
-      ],
-      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
-      "order": 1.4038940050501252,
-      "hidden": false
-    },
     "a608ddd9-9379-464d-966f-5d8d8674c83c": {
       "camera": {
         "type": "perspective",
@@ -86,12 +45,12 @@
       "material": null,
       "name": "Camera",
       "position": [
-        0,
-        2,
-        3
+        1.1961743859325111,
+        1.4064661965049003,
+        2.431280545550314
       ],
       "rotation": [
-        0.0004436887233141012,
+        0.00044368872331410124,
         0.9659425615285845,
         -0.25875089860082223,
         0.0016563336561801576
@@ -195,6 +154,57 @@
         "name": "tarjeta"
       },
       "order": 4.649166082953839
+    },
+    "84a63114-ba5d-4736-8603-5b3db9c3bb23": {
+      "id": "84a63114-ba5d-4736-8603-5b3db9c3bb23",
+      "position": [
+        1.0517470691060888,
+        0.66171273349793,
+        0.5701121056206033
+      ],
+      "rotation": [
+        -0.11422019720201,
+        0,
+        0,
+        0.9934554577589948
+      ],
+      "scale": [
+        1,
+        1.0000000532124818,
+        1.0000000532124818
+      ],
+      "geometry": {
+        "type": "plane",
+        "width": 1,
+        "height": 1
+      },
+      "material": {
+        "type": "basic",
+        "color": "#FFFFFF",
+        "textureSrc": {
+          "type": "asset",
+          "asset": "assets/Gatos_Chroma.mp4"
+        }
+      },
+      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "components": {
+        "c8a14b53-4871-4680-a6be-3bbcdba8d142": {
+          "id": "c8a14b53-4871-4680-a6be-3bbcdba8d142",
+          "name": "chroma-key",
+          "parameters": {
+            "enabled": true,
+            "keyColor": "5cb438",
+            "similarity": 0.12,
+            "smoothness": 0.08,
+            "spill": 1
+          }
+        }
+      },
+      "name": "video chroma",
+      "order": 6.074766462149785,
+      "videoControls": {
+        "loop": true
+      }
     }
   },
   "spaces": {
