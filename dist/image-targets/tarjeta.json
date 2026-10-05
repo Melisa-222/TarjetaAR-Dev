@@ -1,0 +1,23 @@
+{
+  "type": "PLANAR",
+  "properties": {
+    "top": 98,
+    "left": 0,
+    "width": 1181,
+    "height": 1574,
+    "isRotated": true,
+    "originalWidth": 1181,
+    "originalHeight": 1772
+  },
+  "imagePath": "image-targets/tarjeta_luminance.jpg",
+  "metadata": null,
+  "name": "tarjeta",
+  "resources": {
+    "originalImage": "tarjeta_original.jpg",
+    "croppedImage": "tarjeta_cropped.jpg",
+    "thumbnailImage": "tarjeta_thumbnail.jpg",
+    "luminanceImage": "tarjeta_luminance.jpg"
+  },
+  "created": 1790630060457,
+  "updated": 1790630060457
+}

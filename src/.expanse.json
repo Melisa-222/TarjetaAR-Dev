@@ -51,7 +51,7 @@
       },
       "name": "Box",
       "position": [
-        0,
+        -1.372232991519807,
         0.5,
         0
       ],
@@ -66,7 +66,7 @@
         1,
         1
       ],
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "order": 1.4038940050501252,
       "hidden": false
     },
@@ -74,9 +74,10 @@
       "camera": {
         "type": "perspective",
         "xr": {
-          "desktop": "3D",
-          "xrCameraType": "3dOnly",
-          "headset": "disabled"
+          "desktop": "disabled",
+          "xrCameraType": "world",
+          "headset": "disabled",
+          "phone": "AR"
         }
       },
       "components": {},
@@ -133,6 +134,67 @@
       "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
       "order": 0.6644431107322474,
       "hidden": false
+    },
+    "47a27583-df53-46a3-9a4e-bd24102ecf31": {
+      "id": "47a27583-df53-46a3-9a4e-bd24102ecf31",
+      "position": [
+        0.2729486473705396,
+        -0.25368241563586996,
+        0.1955725596148512
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        0.3191347232851075,
+        0.3191347232851075,
+        0.3191347232851075
+      ],
+      "geometry": null,
+      "material": null,
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
+      "components": {},
+      "gltfModel": {
+        "src": {
+          "type": "asset",
+          "asset": "assets/model.glb"
+        },
+        "animationClip": "",
+        "loop": true
+      },
+      "name": "model.glb",
+      "order": 3.3776221668050406
+    },
+    "e687aec4-64cc-448c-b33d-5d4232b106d7": {
+      "id": "e687aec4-64cc-448c-b33d-5d4232b106d7",
+      "position": [
+        0.9954265077429965,
+        0.3576893185158316,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "geometry": null,
+      "material": null,
+      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "components": {},
+      "name": "Objetivo de la imagen",
+      "imageTarget": {
+        "name": "tarjeta"
+      },
+      "order": 4.649166082953839
     }
   },
   "spaces": {
