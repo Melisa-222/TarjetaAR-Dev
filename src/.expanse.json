@@ -125,8 +125,8 @@
     "05fc0452-bfbe-4dc4-b273-9d54d2806e47": {
       "id": "05fc0452-bfbe-4dc4-b273-9d54d2806e47",
       "position": [
-        1.2698819418368534,
-        0,
+        0.274455434093857,
+        -0.3576893185158316,
         0.1901504507332348
       ],
       "rotation": [
@@ -142,7 +142,7 @@
       ],
       "geometry": null,
       "material": null,
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
         "9f4b4e1b-03fc-4578-8f6e-f3f0ff4218ae": {
           "id": "9f4b4e1b-03fc-4578-8f6e-f3f0ff4218ae",
@@ -177,8 +177,8 @@
     "142b358c-fccc-4ba1-b332-db4e49334872": {
       "id": "142b358c-fccc-4ba1-b332-db4e49334872",
       "position": [
-        1.27056739698428,
-        0,
+        0.27514088924128344,
+        -0.3576893185158316,
         0.19464198489583062
       ],
       "rotation": [
@@ -194,7 +194,7 @@
       ],
       "geometry": null,
       "material": null,
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {},
       "gltfModel": {
         "src": {
@@ -210,8 +210,8 @@
     "9b982093-2966-4cad-9f14-3e328a9df01c": {
       "id": "9b982093-2966-4cad-9f14-3e328a9df01c",
       "position": [
-        1.6402483327276252,
-        0.52745523950631,
+        0.6448218249846287,
+        0.16976592099047844,
         0.29205031195048964
       ],
       "rotation": [
@@ -227,7 +227,7 @@
       ],
       "geometry": null,
       "material": null,
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
         "c0bfe5c0-076a-4f3f-bd88-3a9ee17a6573": {
           "id": "c0bfe5c0-076a-4f3f-bd88-3a9ee17a6573",
@@ -261,8 +261,8 @@
     "e911506e-61ec-41bc-9ebe-257da89014ff": {
       "id": "e911506e-61ec-41bc-9ebe-257da89014ff",
       "position": [
-        1.6402483327276252,
-        0.37518915365985006,
+        0.6448218249846287,
+        0.017499835144018483,
         0.2919455839015398
       ],
       "rotation": [
@@ -278,7 +278,7 @@
       ],
       "geometry": null,
       "material": null,
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
         "15ab5a9d-f4bc-4643-90e8-57cd8ecd8fa1": {
           "id": "15ab5a9d-f4bc-4643-90e8-57cd8ecd8fa1",
@@ -312,8 +312,8 @@
     "8c7345c5-11bd-425c-a1b8-35f2ccf44bbc": {
       "id": "8c7345c5-11bd-425c-a1b8-35f2ccf44bbc",
       "position": [
-        1.6402483327276252,
-        0.21673310514222469,
+        0.6448218249846287,
+        -0.1409562133736069,
         0.2919455839015398
       ],
       "rotation": [
@@ -329,7 +329,7 @@
       ],
       "geometry": null,
       "material": null,
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
         "93fb21d6-521c-4173-b729-d6632b88dc10": {
           "id": "93fb21d6-521c-4173-b729-d6632b88dc10",
@@ -363,8 +363,8 @@
     "ddb5ad0d-da5b-48bd-93ce-8411ee7d52d4": {
       "id": "ddb5ad0d-da5b-48bd-93ce-8411ee7d52d4",
       "position": [
-        1.2960410092642074,
-        0.4503066703462384,
+        0.30061450152121094,
+        0.09261735183040681,
         0.10761545327732193
       ],
       "rotation": [
@@ -393,7 +393,7 @@
         "forceTransparent": true,
         "depthWrite": false
       },
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
         "a3315002-8751-453d-a7a9-d999f820d3c2": {
           "id": "a3315002-8751-453d-a7a9-d999f820d3c2",
@@ -418,15 +418,15 @@
     "3e62dffe-3779-4389-b4de-c489e0450fb7": {
       "id": "3e62dffe-3779-4389-b4de-c489e0450fb7",
       "position": [
-        0.6633366150336157,
-        0.393831206622823,
+        -0.3320898927093807,
+        0.03614188810699143,
         0.1640355260805788
       ],
       "rotation": [
         0.00977985868381378,
         0,
         0,
-        0.9999521760384967
+        0.9999521760384966
       ],
       "scale": [
         0.5977288466156077,
@@ -446,7 +446,7 @@
           "asset": "assets/Accidente_magico.mp4"
         }
       },
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
         "f83730ce-b1b2-4b9d-a4e2-faf4b936fd56": {
           "id": "f83730ce-b1b2-4b9d-a4e2-faf4b936fd56",
@@ -474,8 +474,8 @@
     "bb4beb86-bf21-47f8-883b-a644bb2d6638": {
       "id": "bb4beb86-bf21-47f8-883b-a644bb2d6638",
       "position": [
-        0.6695229450557163,
-        0.3479527557483865,
+        -0.32590356268728016,
+        -0.009736562767445056,
         0.17743108724959603
       ],
       "rotation": [
@@ -491,7 +491,7 @@
       ],
       "geometry": null,
       "material": null,
-      "parentId": "88453035-dc0f-486d-868a-8ff7c2fda864",
+      "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {},
       "ui": {
         "type": "3d",
