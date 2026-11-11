@@ -16,38 +16,9 @@ type Binding = {
 
 const bindings = new WeakMap<ecs.World, Map<bigint, Binding>>()
 
-function setupVideoAutoPlay(videoEl: HTMLVideoElement) {
-  videoEl.muted = true
-  videoEl.playsInline = true
-  videoEl.loop = true
-
-  if (videoEl.paused) {
-    videoEl.play().catch(() => {
-      const onTouch = () => {
-        videoEl.play().catch(() => {})
-        window.removeEventListener('pointerdown', onTouch)
-        window.removeEventListener('touchstart', onTouch)
-      }
-      window.addEventListener('pointerdown', onTouch, {once: true})
-      window.addEventListener('touchstart', onTouch, {once: true})
-    })
-  }
-}
-
 function parseRgb(schema: any): [number, number, number] {
-  if (
-    typeof schema.keyRed === 'number' && !isNaN(schema.keyRed) &&
-    typeof schema.keyGreen === 'number' && !isNaN(schema.keyGreen) &&
-    typeof schema.keyBlue === 'number' && !isNaN(schema.keyBlue)
-  ) {
-    return [
-      Math.max(0, Math.min(255, schema.keyRed)) / 255,
-      Math.max(0, Math.min(255, schema.keyGreen)) / 255,
-      Math.max(0, Math.min(255, schema.keyBlue)) / 255,
-    ]
-  }
-
-  if (schema.keyColor && typeof schema.keyColor === 'string') {
+  // 1. If keyColor string is provided and non-empty (Studio color picker / eyedropper)
+  if (schema.keyColor && typeof schema.keyColor === 'string' && schema.keyColor.trim().length > 0) {
     let clean = schema.keyColor.replace('#', '').trim()
     if (clean.startsWith('0x')) clean = clean.substring(2)
     if (clean.length === 3) {
@@ -65,6 +36,20 @@ function parseRgb(schema: any): [number, number, number] {
     }
   }
 
+  // 2. If separate red, green, blue channels are provided
+  if (
+    typeof schema.keyRed === 'number' && !isNaN(schema.keyRed) &&
+    typeof schema.keyGreen === 'number' && !isNaN(schema.keyGreen) &&
+    typeof schema.keyBlue === 'number' && !isNaN(schema.keyBlue)
+  ) {
+    return [
+      Math.max(0, Math.min(255, schema.keyRed)) / 255,
+      Math.max(0, Math.min(255, schema.keyGreen)) / 255,
+      Math.max(0, Math.min(255, schema.keyBlue)) / 255,
+    ]
+  }
+
+  // Default: Pure Green
   return [0, 1, 0]
 }
 
@@ -96,8 +81,8 @@ uniform float chromaSoftness;
 uniform float chromaSpill;
 uniform float chromaEnabled;
 
-// Three.js decodes video textures into Linear color space.
-// We convert back to sRGB to match the color picker coordinates.
+// Three.js decodes video textures into Linear color space when DECODE_VIDEO_TEXTURE is active.
+// We convert back to sRGB so color comparison matches the sRGB color picker.
 vec3 chromaLinearToSrgb(vec3 color) {
   return mix(
     12.92 * color,
@@ -120,54 +105,57 @@ const CHROMA_BODY = `
 #ifdef USE_MAP
 if (chromaEnabled > 0.5) {
   vec3 srgbCol = chromaLinearToSrgb(diffuseColor.rgb);
-  vec2 pChroma = chromaGetCbCr(srgbCol);
-  vec2 kChroma = chromaGetCbCr(chromaKeyColor);
 
-  float d = distance(pChroma, kChroma);
+  // Detect whether we are keying against a green or blue screen
+  bool isGreenKey = chromaKeyColor.g > chromaKeyColor.r && chromaKeyColor.g > chromaKeyColor.b;
+  bool isBlueKey  = chromaKeyColor.b > chromaKeyColor.r && chromaKeyColor.b > chromaKeyColor.g;
 
-  float maxRB = max(srgbCol.r, srgbCol.b);
-  float maxChannel = max(srgbCol.r, max(srgbCol.g, srgbCol.b));
-  float lum = dot(srgbCol, vec3(0.299, 0.587, 0.114));
-  float greenExcess = srgbCol.g - maxRB;
-
-  // 1. Black / Shadow Protection:
-  // Dark elements (black cat fur, dark clothes, pupils, outlines) often pick up
-  // compression chroma noise or spill that makes them look slightly green.
-  // Real green screens have high brightness (> 0.22) and strong green dominance.
-  // Dark pixels must NEVER be keyed out, regardless of how high tolerance is set.
-  if (maxChannel < 0.20 || lum < 0.16) {
-    d += 2.0;
+  float keyExcess = 1.0;
+  float maxOther = max(srgbCol.r, srgbCol.b);
+  if (isGreenKey) {
+    keyExcess = srgbCol.g - maxOther;
+  } else if (isBlueKey) {
+    maxOther = max(srgbCol.r, srgbCol.g);
+    keyExcess = srgbCol.b - maxOther;
   }
 
-  // 2. Color Dominance Protection:
-  // If green is not strictly dominant over red and blue, this CANNOT be the green screen.
-  // Preserves yellow/gold/orange sparks, warm fur, skin tones, etc.
-  if (greenExcess <= 0.005) {
-    d += 2.0;
-  }
+  // 1. FOREGROUND SHIELD:
+  // If the key color does not dominate other channels, this pixel is NOT part
+  // of the backing screen. This permanently protects blacks, dark shadows,
+  // skin tones, clothes, sparks, and warm colors regardless of tolerance setting.
+  if (keyExcess <= 0.0) {
+    // 100% solid foreground - do not key out
+  } else {
+    vec2 pChroma = chromaGetCbCr(srgbCol);
+    vec2 kChroma = chromaGetCbCr(chromaKeyColor);
+    float chromaDist = distance(pChroma, kChroma);
 
-  // 3. Bright Highlight Protection:
-  // White spark cores or highlights.
-  if (min(srgbCol.r, min(srgbCol.g, srgbCol.b)) > 0.70) {
-    d += 2.0;
-  }
+    // Excess factor smoothly ramps up from light spill level (0.02) to full background (0.10).
+    // Dark elements with slight color spill remain solid!
+    float excessFactor = smoothstep(0.02, 0.10, keyExcess);
 
-  float edge0 = chromaTolerance;
-  float edge1 = chromaTolerance + max(chromaSoftness, 0.001);
-  float alphaVal = smoothstep(edge0, edge1, d);
+    // Distance factor (0 near key color, 1 far away)
+    float edge0 = chromaTolerance;
+    float edge1 = chromaTolerance + max(chromaSoftness, 0.001);
+    float distFactor = smoothstep(edge0, edge1, chromaDist);
 
-  diffuseColor.a *= alphaVal;
+    // Remove pixel only when BOTH chroma matches AND key channel dominance is strong
+    float keyStrength = (1.0 - distFactor) * excessFactor;
+    diffuseColor.a *= (1.0 - keyStrength);
 
-  // Discard keyed-out background pixels immediately
-  if (diffuseColor.a <= 0.01) {
-    discard;
-  }
+    // Discard keyed-out background pixels immediately so they don't block AR view
+    if (diffuseColor.a <= 0.01) {
+      discard;
+    }
 
-  // Despill: suppress green reflection ONLY on visible subject edges
-  if (chromaSpill > 0.0 && chromaKeyColor.g > chromaKeyColor.r && chromaKeyColor.g > chromaKeyColor.b) {
-    if (diffuseColor.g > maxRB) {
-      float excess = diffuseColor.g - maxRB;
-      diffuseColor.g -= excess * chromaSpill;
+    // 2. DESPILL:
+    // Suppress green or blue reflection on foreground edges
+    if (chromaSpill > 0.0) {
+      if (isGreenKey && diffuseColor.g > maxOther) {
+        diffuseColor.g -= (diffuseColor.g - maxOther) * chromaSpill;
+      } else if (isBlueKey && diffuseColor.b > maxOther) {
+        diffuseColor.b -= (diffuseColor.b - maxOther) * chromaSpill;
+      }
     }
   }
 }
@@ -184,14 +172,14 @@ gl_FragColor = vec4( outgoingLight, diffuseColor.a );
 const attach = (mesh: EffectMesh): Binding => {
   const uniforms = {
     chromaKeyColor: {value: [0, 1, 0] as [number, number, number]},
-    chromaTolerance: {value: 0.35},
+    chromaTolerance: {value: 0.40},
     chromaSoftness: {value: 0.08},
-    chromaSpill: {value: 0.5},
+    chromaSpill: {value: 0.7},
     chromaEnabled: {value: 1.0},
   }
 
   const effect: MaterialEffect = {
-    cacheKey: 'chroma-key-v7',
+    cacheKey: 'chroma-key-v8',
     properties: {transparent: true, depthWrite: false, side: 2},
     compile: (shader) => {
       Object.assign(shader.uniforms, uniforms)
@@ -246,9 +234,9 @@ ecs.registerComponent({
     keyRed: 0,
     keyGreen: 255,
     keyBlue: 0,
-    tolerance: 0.35,
+    tolerance: 0.40,
     softness: 0.08,
-    spill: 0.5,
+    spill: 0.7,
   },
 
   tick: (world, {eid, schema}) => {
@@ -264,12 +252,20 @@ ecs.registerComponent({
       return
     }
 
-    // Force ECS material transparency
+    // Ensure ECS material transparency is enabled for all material types
     if (ecs.Material.has(world, eid)) {
       const ecsMat = ecs.Material.get(world, eid) as any
       if (!ecsMat.forceTransparent) {
         ecs.Material.mutate(world, eid, (cursor) => {
           ;(cursor as any).forceTransparent = true
+        })
+      }
+    }
+    if ((ecs as any).UnlitMaterial?.has(world, eid)) {
+      const ecsMat = (ecs as any).UnlitMaterial.get(world, eid) as any
+      if (!ecsMat.forceTransparent) {
+        (ecs as any).UnlitMaterial.mutate(world, eid, (cursor: any) => {
+          cursor.forceTransparent = true
         })
       }
     }
@@ -291,8 +287,12 @@ ecs.registerComponent({
     const mat: any = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material
     if (!mat) return
 
-    mat.transparent = true
-    mat.depthWrite = false
+    // Ensure Three.js material has transparency enabled and forces recompile if needed
+    if (!mat.transparent || mat.depthWrite !== false) {
+      mat.transparent = true
+      mat.depthWrite = false
+      mat.needsUpdate = true
+    }
     mat.side = 2
 
     if (!binding) {
@@ -302,11 +302,11 @@ ecs.registerComponent({
     setMaterialEffect(mesh, 'chroma-key', binding.effect)
 
     const rgb = parseRgb(schema)
-    const rawTol = typeof schema.tolerance === 'number' && !isNaN(schema.tolerance) ? schema.tolerance : 0.35
-    const tolerance = rawTol > 0.001 ? rawTol : 0.35
+    const rawTol = typeof schema.tolerance === 'number' && !isNaN(schema.tolerance) ? schema.tolerance : 0.40
+    const tolerance = rawTol > 0.001 ? rawTol : 0.40
     const rawSoft = typeof schema.softness === 'number' && !isNaN(schema.softness) ? schema.softness : 0.08
     const softness = rawSoft > 0.0001 ? rawSoft : 0.08
-    const rawSpill = typeof schema.spill === 'number' && !isNaN(schema.spill) ? schema.spill : 0.5
+    const rawSpill = typeof schema.spill === 'number' && !isNaN(schema.spill) ? schema.spill : 0.7
     const spill = Math.max(0, Math.min(1, rawSpill))
 
     const {uniforms} = binding
@@ -318,8 +318,11 @@ ecs.registerComponent({
     uniforms.chromaSpill.value = spill
     uniforms.chromaEnabled.value = ((schema as any).enabled !== false) ? 1.0 : 0.0
 
+    // Ensure video texture element has playsInline set so mobile browsers decode properly
     if (mat.map?.image instanceof HTMLVideoElement) {
-      setupVideoAutoPlay(mat.map.image)
+      if (!mat.map.image.playsInline) {
+        mat.map.image.playsInline = true
+      }
     }
   },
 

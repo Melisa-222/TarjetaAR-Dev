@@ -444,7 +444,9 @@
         "textureSrc": {
           "type": "asset",
           "asset": "assets/Accidente_magico.mp4"
-        }
+        },
+        "forceTransparent": true,
+        "depthWrite": false
       },
       "parentId": "e687aec4-64cc-448c-b33d-5d4232b106d7",
       "components": {
